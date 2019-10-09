@@ -1,0 +1,26 @@
+Requirements
+
+redo start menu
+    Needs name of game
+    Value and types of aliens
+    play game
+    and high score
+
+High score has top 10 players stored in hdd and opened in dofferent menu when selected
+
+3 types of aliens
+
+a ufo occasionly goes across top of screen
+
+Aliens need simple 2 frame animation and a (3-4) frame animation for destruction
+
+Recreate ship and add a 8 - 12 frame destruction
+
+Add bunker and use PIL for it lasers can pass through partially broken bunkers
+
+ominous bgm that plays faster as enemies lessen
+
+a play button
+
+need to make aliens shoot back and they shoot back more frequently as level increases
+
