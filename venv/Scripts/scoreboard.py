@@ -22,6 +22,15 @@ class Scoreboard():
         self.prep_level()
         self.prep_ships()
 
+        self.myfont = pygame.font.SysFont('Comic Sans MS', 30)
+        self.worth =  "1000000"
+        self.textsurface = self.myfont.render(self.worth, False, (219,211,65))
+        self.display = False
+        self.x = 0
+        self.y = 0
+        self.counter = 0
+
+
     def prep_score(self):
         '''Turn the score into a rendered image.'''
         #rounded_score = int(round(self.stats.score, 0))
@@ -70,10 +79,11 @@ class Scoreboard():
             ship.rect.y = 10
             self.ships.add(ship)
 
-    def prep_ufo(self,score):
-        self.ufo_image = self.font.render(str(score), True, (219,211,65), self.ai_settings.bg_color)
-        self.ufo_rect = self.ufo_image.get_rect()
-        self.ufo_rect.centerx = self.screen_rect.centerx
-        self.ufo_rect.top = self.screen_rect.top -20
-        self.screen.blit(self.ufo_image, self.ufo_rect)
 
+    def blit_score(self):
+        self.counter += .025
+        if (self.counter >= 1.0):
+            self.display = False
+            self.counter=0.0
+        self.textsurface = self.myfont.render(self.worth, False, (219,211,65))
+        self.screen.blit(self.textsurface, (self.x,self.y))

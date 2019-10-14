@@ -13,6 +13,9 @@ class Alien(Sprite):
         self.brand = brand
         self.counter = 0
         self.index=0
+        self.exIn = 2
+        self.kill = False
+        self.exploding = False
 
         # Load the alien image and set its rect attribute.
         if brand == 0:
@@ -24,6 +27,9 @@ class Alien(Sprite):
         elif brand == 2:
             self.images = [pygame.image.load('images/Alien30.png'), pygame.image.load('images/Alien31.png')]
             self.score = 15
+        self.images.append(pygame.image.load('images/alien_explosion0.png'))
+        self.images.append(pygame.image.load('images/alien_explosion1.png'))
+        self.images.append(pygame.image.load('images/alien_explosion2.png'))
         self.index = 0
         self.image = self.images[self.index]
         self.image = pygame.transform.scale(self.image, (60, 58))
@@ -47,18 +53,33 @@ class Alien(Sprite):
         elif self.rect.left<= 0:
             return True
 
+
     def update(self):
         '''Move the alien right or left.'''
         self.x += (self.ai_settings.alien_speed_factor * self.ai_settings.fleet_direction)
         self.rect.x = self.x
         self.counter += .05
-        if(self.counter >= 1.0):
-            self.index += 1
-            if self.index >= len(self.images):
-                self.index = 0
-            self.image = self.images[self.index]
-            self.image = pygame.transform.scale(self.image, (60, 58))
-            self.counter = 0
+        if(self.exploding):
+            if (self.counter >= 1.0):
+                self.exIn += 1
+                if self.exIn >= 5:
+                    self.kill = True
+                    self.exploding = False
+                    self.exIn=4
+                self.image = self.images[self.exIn]
+                self.image = pygame.transform.scale(self.image, (60, 58))
+                self.counter = 0
+            else:
+                self.image = self.images[self.exIn]
+                self.image = pygame.transform.scale(self.image, (60, 58))
         else:
-            self.image = self.images[self.index]
-            self.image = pygame.transform.scale(self.image, (60, 58))
+            if(self.counter >= 1.0):
+                self.index += 1
+                if self.index >= 2:
+                    self.index = 0
+                self.image = self.images[self.index]
+                self.image = pygame.transform.scale(self.image, (60, 58))
+                self.counter = 0
+            else:
+                self.image = self.images[self.index]
+                self.image = pygame.transform.scale(self.image, (60, 58))

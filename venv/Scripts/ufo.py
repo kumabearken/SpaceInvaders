@@ -17,7 +17,6 @@ class UFO(Sprite):
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
 
-
         # Start each new alien near the top left of the screen.
         self.rect.top = 25
         self.rect.right = random.randint(-5000,-300)

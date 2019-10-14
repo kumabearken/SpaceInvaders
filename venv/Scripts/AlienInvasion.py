@@ -14,15 +14,16 @@ from tkinter import *
 from PIL import ImageTk
 from PIL import Image
 from pygame import mixer
+import wave
 
 #from window import Window
 class Window(Frame):
-
 
     def __init__(self, master=None):
         Frame.__init__(self, master=None)
         self.master = master
         self.init_window()
+
 
     #Creation of init_window
     def init_window(self):
@@ -33,20 +34,20 @@ class Window(Frame):
         # allowing the widget to take the full space of the root window
         self.pack(fill=BOTH, expand=1)
 
-        lbl = Label(self, text='Space\nInavders',font=("Arial Bold",80))
+        lbl = Label(self, text='Space\nInvaders',font=("Arial Bold",80))
         lbl.grid(column=50, row =0)
 
         # creating a button instance
         playButton = Button(self, text="Play", command=run_game)
 
         # placing the button on my window
-        playButton.place(x=350, y=800)
+        playButton.place(x=300, y=810)
 
         # creating a button instance
         hsButton = Button(self, text="HighScore", command=highScore)
 
         # placing the button on my window
-        hsButton.place(x=100, y=800)
+        hsButton.place(x=100, y=810)
 
         width = 100
         height = 100
@@ -54,22 +55,30 @@ class Window(Frame):
         self.img1 = self.img1.resize((width, height), Image.ANTIALIAS)
         self.photoImg1 = ImageTk.PhotoImage(self.img1)
         self.imglabel1 = Label(self, image=self.photoImg1).grid(row=400, column=50)
-        lbl1 = Label(self, text='x45',font=("Arial Bold",16))
+        lbl1 = Label(self, text='x45 pts',font=("Arial Bold",16))
         lbl1.grid(row=401, column=50)
 
         self.img2 = Image.open("images/Alien20.png")
         self.img2 = self.img2.resize((width, height), Image.ANTIALIAS)
         self.photoImg2 = ImageTk.PhotoImage(self.img2)
         self.imglabel2 = Label(self, image=self.photoImg2).grid(row=500, column=50)
-        lbl2 = Label(self, text='x30',font=("Arial Bold",16))
+        lbl2 = Label(self, text='x30 pts',font=("Arial Bold",16))
         lbl2.grid(row=501, column=50)
 
         self.img3 = Image.open("images/Alien30.png")
         self.img3 = self.img3.resize((width, height), Image.ANTIALIAS)
         self.photoImg3 = ImageTk.PhotoImage(self.img3)
         self.imglabel3 = Label(self, image=self.photoImg3).grid(row=600, column=50)
-        lbl3 = Label(self, text='x15',font=("Arial Bold",16))
+        lbl3 = Label(self, text='x15 pts',font=("Arial Bold",16))
         lbl3.grid(row=601, column=50)
+
+        self.img4 = Image.open("images/UFO1.png")
+        self.img4 = self.img4.resize((width, height), Image.ANTIALIAS)
+        self.photoImg4 = ImageTk.PhotoImage(self.img4)
+        self.imglabel4 = Label(self, image=self.photoImg4).grid(row=700, column=50)
+        lbl4 = Label(self, text='???  pts', font=("Arial Bold", 16))
+        lbl4.grid(row=701, column=50)
+
 
 def run_game():
     # Initialize game and create a screen object.
@@ -93,15 +102,22 @@ def run_game():
     aliens = []
     gf.create_fleet(ai_settings, screen,ship, aliens, stats)
     bunkers = Group()
-    ufos = Group()
+    ufos = []
 
     # Create the fleet of ;aiens
     gf.create_bunkers(ai_settings, screen,bunkers)
     #gf.create_fleet(ai_settings, screen, ship, aliens)
     gf.create_ufo(ai_settings,screen, ufos)
-    mixer.init()
-    mixer.music.load("sounds\\Hipster Alien.mp3")
+    file_path = "sounds\\Hipster Alien.wav"
+    file_wav = wave.open(file_path)
+    frequency = file_wav.getframerate()
+    mixer.init(frequency=frequency)
+    print (frequency)
+    mixer.music.load(file_path)
     mixer.music.play(-1)
+    one = False
+    two = True
+    three = False
     # Start the main loop for the game.
     while True:
         gf.check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bullets, bunkers,ufos)
@@ -110,9 +126,31 @@ def run_game():
             ship.update()
             for ufo in ufos:
                 ufo.update()
+            if (len(aliens) == 45 and one):
+                mixer.quit()
+                mixer.init(frequency=frequency,buffer=1024)
+                mixer.music.load(file_path)
+                mixer.music.play(-1)
+                one=False
+                two = True
+            if (len(aliens) <= 30 and two):
+                mixer.quit()
+                mixer.init(frequency=frequency+5000,buffer=1024)
+                mixer.music.load(file_path)
+                mixer.music.play(-1)
+                two = False
+                three = True
+            if (len(aliens) <= 15 and three):
+                mixer.quit()
+                mixer.init(frequency=frequency+10000,buffer=1024)
+                mixer.music.load(file_path)
+                mixer.music.play(-1)
+                three = False
+                one = True
             gf.update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets,bunkers,ufos)
-            gf.update_aliens(ai_settings,screen, stats, sb , ship, aliens, bullets, clock)
+            gf.update_aliens(ai_settings,screen, stats, sb , ship, aliens, bullets, clock,bunkers=bunkers)
         gf.update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button, bunkers,ufos)
+
 
 def highScore():
     top = Toplevel()
@@ -123,7 +161,6 @@ def highScore():
     file.close()
 
 window = Tk()
-window.geometry("500x900")
+window.geometry("450x900")
 app = Window(window)
 window.mainloop()
-
