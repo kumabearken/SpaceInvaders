@@ -363,7 +363,6 @@ def update_highscore(score):
     tempLine=""
     drop = False
     name =""
-    score=12346589
     with open("highscore.txt","r") as iFile, open("temp.txt","w") as oFile:
         print("test1")
         for line in iFile:
